@@ -54,19 +54,18 @@ module.exports = app => {
                 .catch(err => res.status(500).send(err))
        }
        
-    const getById = (req, res) => {
+
+
+    const getById = (req,res)=>{
+        const { id } = req.params
         app.db('products')
-            .where({ id: req.params.id})
+            .where({ id })
             .first()
-            .them(products =>{
-                products.content = productss.content.toString()
+            .then((products) =>{
+                products.title = products.title.toString()
                 return res.json(products)
             })
-            .catch(err => res.status(500).send(err))
-    }
-
-    const get = (req,res)=>{
-        app.db()
+            .catch((err) => res.status(500).send);
     }
   
   return { save,remove,getById,getPagination }
