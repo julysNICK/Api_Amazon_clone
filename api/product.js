@@ -8,6 +8,7 @@ module.exports = app => {
           existsOrError(product.imageUrl,'Imagem do produto obrigatorio')
           existsOrError(product.userId,'loja ou vendedor nâo informado')
           existsOrError(product.price,'valor nâo informado')
+          existsOrError(product.categoryId,'valor nâo informado')
       } catch (msg) {
           res.status(400).send(msg)
       }

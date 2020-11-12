@@ -5,6 +5,8 @@ module.exports = app => {
     app.route('/users')
         .post(app.api.users.save)
         .get(app.api.users.getUsers)
+    app.route('/category')
+            .post(app.api.category.save)
     app.route('/products')
         .get(app.api.product.getPagination)
         .post(app.api.product.save)
