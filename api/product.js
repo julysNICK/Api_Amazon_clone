@@ -8,7 +8,7 @@ module.exports = app => {
           existsOrError(product.imageUrl,'Imagem do produto obrigatorio')
           existsOrError(product.userId,'loja ou vendedor nâo informado')
           existsOrError(product.price,'valor nâo informado')
-          existsOrError(product.categoryId,'valor nâo informado')
+          existsOrError(product.categoryId,'categoria nâo informada')
       } catch (msg) {
           res.status(400).send(msg)
       }
@@ -49,7 +49,7 @@ module.exports = app => {
            const count = parseInt(result.count)
 
            app.db('products')
-                .select('id','title','imageUrl','price','userId')
+                .select('id','title','imageUrl','price','userId','categoryId')
                 .limit(limit).offset(page * limit - limit)
                 .then(products => res.json({data: products , count ,limit}))
                 .catch(err => res.status(500).send(err))
