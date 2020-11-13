@@ -66,7 +66,7 @@ module.exports = app => {
                 products.title = products.title.toString()
                 return res.json(products)
             })
-            .catch((err) => res.status(500).send);
+            .catch((err) => res.status(500).send(err));
     }
   
   return { save,remove,getById,getPagination }
