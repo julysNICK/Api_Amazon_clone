@@ -68,6 +68,16 @@ module.exports = app => {
             })
             .catch((err) => res.status(500).send(err));
     }
+
+    const getbyName = (req,res) => {
+        const {name} = req.params
+
+        app.db('products')
+             .where('title','LIKE',`%${name}%`)
+             .select('id','title','imageUrl','price','userId','categoryId')
+                .then(products =>  res.json({data: products}) )
+                .catch(err => res.status(500).send(err))
+    }
   
-  return { save,remove,getById,getPagination }
+  return { save,remove,getById,getPagination,getbyName }
 }

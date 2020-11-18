@@ -14,6 +14,8 @@ module.exports = app => {
          .get(app.api.product.getById)
          .put(app.api.product.save)
          .delete(app.api.product.remove)
+    app.route('/productsSearch/search=:name')
+                .get(app.api.product.getbyName)
 
 
 }
