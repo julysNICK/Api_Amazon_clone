@@ -10,7 +10,7 @@ module.exports = app =>{
         if(category.id){
             app.db('categories')
                 .update(category)
-                .where({id: category.id})
+                .where({category_id: category.id})
                 .then(_ => res.status(204).send())
                 .catch(err => res.status(500).send(err))
 

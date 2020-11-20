@@ -34,7 +34,7 @@ module.exports = app =>{
         if(user.id){
             app.db('users')
                 .update(user)
-                .where({id: user.id})
+                .where({user_id: user.id})
                 .whereNull('deleteAt')
                 .then(_=> res.status(204))
                 .catch(err => res.status(500).send(err))
@@ -49,7 +49,7 @@ module.exports = app =>{
     }
    const getUsers = (req , res) => {
        app.db('users')
-            .select('id','name','email','admin')
+            .select('user_id','name','email','admin')
             .then(users => res.json({users}) )
             .catch(err => res.status(500).send(err))
    }

@@ -1,3 +1,4 @@
+const knex = require('knex')
 module.exports = app => {
     const {existsOrError,notExistOrError,equalOrError} = app.api.validation
   const save = (req,res) => {
@@ -15,7 +16,7 @@ module.exports = app => {
       if (product.id) {
           app.db('products')
               .update(product)
-              .where({id: product.id})
+              .where({product_id: product.id})
               .then(_=>res.status(204).send())
               .catch(err => res.status(500).send(err))
       } else {
@@ -29,7 +30,7 @@ module.exports = app => {
       const remove = async (req,res) => {
          try {
              const rowsDelete = await app.db('products')
-                                            .where({id: req.params.id}).del()
+                                            .where({product_id: req.params.id}).del()
              try {
                  existsOrError(rowsDelete,'artigo nao encontrado')
              } catch (msg) {
@@ -45,11 +46,11 @@ module.exports = app => {
        const getPagination = async (req, res) => {
            const page = req.query.page || 1
         
-           const result = await app.db('products').count('id').first()
+           const result = await app.db('products').count('product_id').first()
            const count = parseInt(result.count)
 
            app.db('products')
-                .select('id','title','imageUrl','price','userId','categoryId')
+                .select('product_id','title','imageUrl','price','userId','categoryId')
                 .limit(limit).offset(page * limit - limit)
                 .then(products => res.json({data: products , count ,limit}))
                 .catch(err => res.status(500).send(err))
@@ -58,15 +59,19 @@ module.exports = app => {
 
 
     const getById = (req,res)=>{
-        const { id } = req.params
+        const { productid } = req.params
         app.db('products')
-            .where({ id })
-            .first()
+            .where({ product_id : productid })
+            .innerJoin('categories','products.categoryId','categories.category_id ')
+            .first()  
             .then((products) =>{
                 products.title = products.title.toString()
                 return res.json(products)
             })
-            .catch((err) => res.status(500).send(err));
+            .catch((err) =>{
+                res.status(500).send(err)
+                console.log(err)
+            });
     }
 
     const getbyName = (req,res) => {
@@ -74,10 +79,18 @@ module.exports = app => {
 
         app.db('products')
              .where('title','LIKE',`%${name}%`)
-             .select('id','title','imageUrl','price','userId','categoryId')
+             .select('product_id','title','imageUrl','price','userId','categoryId')
                 .then(products =>  res.json({data: products}) )
                 .catch(err => res.status(500).send(err))
     }
+  const  getbyCategory = (req,res) =>{
+        app.db('products')
+            .select()
+            .innerJoin('categories','categories.category_id','products.categoryId').then(data => res.json({data:data})).catch(err => {
+                res.status(500).send(err)
+                console.log(err)
+            })
+    }
   
-  return { save,remove,getById,getPagination,getbyName }
+  return { save,remove,getById,getPagination,getbyName,getbyCategory }
 }
