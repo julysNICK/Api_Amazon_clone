@@ -15,7 +15,7 @@ module.exports = app =>{
         if(!req.user || req.user.admin) user.admin = false
 
         try {
-            existsOrError(user.name, 'Nome não informado')
+            existsOrError(user.name_user, 'Nome não informado')
             existsOrError(user.email,'E-mail não informado')
             validationEmail(user.email, 'email invalido')
             existsOrError(user.password, 'Senha não informada')
@@ -37,19 +37,25 @@ module.exports = app =>{
                 .where({user_id: user.id})
                 .whereNull('deleteAt')
                 .then(_=> res.status(204))
-                .catch(err => res.status(500).send(err))
+                .catch(err => {
+                    res.status(500).send(err)
+                    console.log(err)
+                })
         }else{
             app.db('users')
                 .insert(user)
                 .then(_=>res.status(204).send())
-                .catch(err => res.status(500).send(err))
+                .catch(err =>{
+                    res.status(500).send(err)             
+                    console.log(err)
+                })
         }
 
 
     }
    const getUsers = (req , res) => {
        app.db('users')
-            .select('user_id','name','email','admin')
+            .select('user_id','name_user','email','admin')
             .then(users => res.json({users}) )
             .catch(err => res.status(500).send(err))
    }

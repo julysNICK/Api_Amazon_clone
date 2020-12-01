@@ -1,25 +1,50 @@
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken');
+const jwt = require('jwt-simple');
  const secret = 'uhefuiwhfueihjgnsnjs'
 
  module.exports = app => {
     const {existsOrError,notExistOrError,equalOrError,validationEmail} = app.api.validation
     const signin = async (req,res)=> {
-        const {name,email,password, admin} = req.body
-        validationEmail(email,'email invalido')
-        if (!email || !password) {
+        console.log(req.body)
+        validationEmail(req.body.email,'email invalido')
+        if (!req.body.email || !req.body.password) {
             return res.status(400).send('informe email e senha')
         }
 
-        const user = await app.db('users').select('id','email','password','admin').where({email: email}).first()
+        const user = await app.db('users').where({email: req.body.email}).first()
+        console.log(user)
         if(!user) return res.status(400).send('usuario nao encontrado')
 
-        const isEqual = bcrypt.compare(password,user.password)
-        if(!isEqual) return res.status(401).send('senha errada')
 
-        const token = jwt.sign({name:user.name, email: user.email, admin: user.admin }, secret);
-        return res.status(200).json({token : token})
+        const isEqual = bcrypt.compareSync(req.body.password,user.password)
+        if(!isEqual) return res.status(401).send('senha errada')
+        const now = Math.floor(Date.now() / 1000)
+        const payload = {
+            id: user.user_id,
+            name: user.name,
+            email: user.email,
+            admin: user.admin,
+            iat: now,
+            exp: now + (60*60*24*3) 
+        }
+        return res.json({...payload,token: jwt.encode(payload,secret) })
+
 
     }
-  return {signin}
+    const validateToken = async (req,res) => {
+        const userData = req.body || null
+        try {
+            if(userData){
+                const token = jwt.decode(userData.token,secret)
+             if (new Date(token.exp * 1000) > new Date()) {
+                 return res.send(true)
+             }
+            }
+        } catch (error) {
+            
+        }
+        res.send(false)
+        
+    }
+  return {signin,validateToken}
  }

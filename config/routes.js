@@ -1,8 +1,11 @@
-module.exports = app => {
 
-    app.route('/users/login')
-            .post(app.api.auth.signin)
+
+module.exports = app => {
+    app.post('/users/register',app.api.users.save)
+    app.post('/users/login',app.api.auth.signin)
+    app.post('/validationToken',app.api.auth.validateToken)
     app.route('/users')
+        .all(app.config.passport.authenticate())
         .post(app.api.users.save)
         .get(app.api.users.getUsers)
     app.route('/category')
@@ -17,7 +20,7 @@ module.exports = app => {
     app.route('/productsSearch/search=:name')
                 .get(app.api.product.getbyName)
 
-    app.route('/product/category/')
+    app.route('/product/category/:categories')
             .get(app.api.product.getbyCategory)
 
 

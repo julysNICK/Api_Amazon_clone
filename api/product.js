@@ -79,14 +79,19 @@ module.exports = app => {
 
         app.db('products')
              .where('title','LIKE',`%${name}%`)
-             .select('product_id','title','imageUrl','price','userId','categoryId')
+             .select('product_id','title','imageUrl','price','userId','rating','categoryId')
                 .then(products =>  res.json({data: products}) )
                 .catch(err => res.status(500).send(err))
     }
   const  getbyCategory = (req,res) =>{
+      const {categories} = req.params
         app.db('products')
-            .select()
-            .innerJoin('categories','categories.category_id','products.categoryId').then(data => res.json({data:data})).catch(err => {
+         .innerJoin('categories','categories.category_id','products.categoryId')
+         .innerJoin('users','users.user_id','products.userId')
+         .select('product_id','title','imageUrl','price','userId','name_user','name_category').where('name_category','=',`${categories}`)
+           .then(data => {res.json({data:data})
+                console.log(data)
+        }).catch(err => {
                 res.status(500).send(err)
                 console.log(err)
             })

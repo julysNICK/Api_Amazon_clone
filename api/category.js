@@ -3,7 +3,7 @@ module.exports = app =>{
         const {existsOrError,notExistOrError,equalOrError,validationEmail} = app.api.validation
         const category = {...req.body};
         try {
-           existsOrError(category.name,'nome não informado') 
+           existsOrError(category.name_category,'nome não informado') 
         } catch (msg) {
             return res.status(400).send(msg)
         }
@@ -12,14 +12,20 @@ module.exports = app =>{
                 .update(category)
                 .where({category_id: category.id})
                 .then(_ => res.status(204).send())
-                .catch(err => res.status(500).send(err))
+                .catch(err => {
+                    res.status(500).send(err)
+                    console.log(err)
+                })
 
         
         }else{
             app.db('categories')
                 .insert(category)
                 .then(_=> res.status(204).send())
-                .catch(err => res.status(500).send(err))
+                .catch(err => {
+                    res.status(500).send(err)
+                    console.log(err)
+                })
         }
     }
 
